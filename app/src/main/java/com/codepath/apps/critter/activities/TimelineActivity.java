@@ -11,6 +11,7 @@ import com.codepath.apps.critter.R;
 import com.codepath.apps.critter.TwitterApplication;
 import com.codepath.apps.critter.TwitterClient;
 import com.codepath.apps.critter.adapters.TweetsAdapter;
+import com.codepath.apps.critter.listeners.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.critter.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -21,13 +22,12 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 
-
-
-
 public class TimelineActivity extends AppCompatActivity {
 
     private TwitterClient twitterClient;
     private ArrayList<Tweet> tweets;
+
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     //private TweetsArrayAdapter tweetsAdapter;
     private TweetsAdapter tweetsAdapter;
@@ -55,26 +55,46 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setAdapter(tweetsAdapter);
 
         // Set layout manager to position the items
-        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(linearLayoutManager);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(long max_id, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list of tweets
+
+                //calculate new value for max_id: get the latest tweet and subtract 1
+                Tweet t = tweets.get(tweets.size() - 1);
+                long newMaxId = t.getTweetID();
+                if (newMaxId != 0L) {//make the API call only if it's possible to decrement the ID
+                    populateTimeline(--newMaxId);
+                }
+            }
+        };
+
+
+        // Add the scroll listener to RecyclerView
+        rvTweets.addOnScrollListener(scrollListener);
 
         twitterClient = TwitterApplication.getRestClient();//get singleton client
-        populateTimeline();
+        populateTimeline(-1L);//first call, max_id won't be included as parameter in the API call
 
     }
 
-    //todo: pagination
 
+    //todo: http://guides.codepath.com/android/Sending-and-Managing-Network-Requests
 
     //todo: empty space at end of recyclerview
 
+    //todo: improve API calls by adding since_id
 
     //todo: change bar title
 
 
     //send API request to get the timeline JSON
-    //and fill the listview with the data retrieved
+    //and fill the recyclerview with the data retrieved
     //by creating tweet objects
-    private void populateTimeline() {
+    private void populateTimeline(long maxId) {
         twitterClient.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -97,7 +117,7 @@ public class TimelineActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
-        });
+        }, maxId);
     }
 
     @Override
