@@ -10,7 +10,7 @@
     <application
         android:name="com.codepath.apps.critter.TwitterApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_bug_report_white_48dp"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
