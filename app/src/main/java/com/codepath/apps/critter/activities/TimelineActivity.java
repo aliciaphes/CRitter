@@ -1,17 +1,23 @@
 package com.codepath.apps.critter.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Toast;
 
 import com.codepath.apps.critter.R;
 import com.codepath.apps.critter.TwitterApplication;
 import com.codepath.apps.critter.TwitterClient;
 import com.codepath.apps.critter.adapters.TweetsAdapter;
+import com.codepath.apps.critter.fragments.ComposeFragment;
 import com.codepath.apps.critter.listeners.EndlessRecyclerViewScrollListener;
+import com.codepath.apps.critter.listeners.PostTwitterListener;
 import com.codepath.apps.critter.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -27,6 +33,8 @@ public class TimelineActivity extends AppCompatActivity {
     private TwitterClient twitterClient;
     private ArrayList<Tweet> tweets;
 
+    LinearLayoutManager linearLayoutManager;
+
     private EndlessRecyclerViewScrollListener scrollListener;
 
     //private TweetsArrayAdapter tweetsAdapter;
@@ -34,6 +42,8 @@ public class TimelineActivity extends AppCompatActivity {
 
     //private ListView lvTweets;
     private RecyclerView rvTweets;
+
+    private ComposeFragment composeFragment;
 
 
     @Override
@@ -55,9 +65,53 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setAdapter(tweetsAdapter);
 
         // Set layout manager to position the items
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager = new LinearLayoutManager(this);
         rvTweets.setLayoutManager(linearLayoutManager);
 
+
+        enableInfiniteScroll();
+
+
+        twitterClient = TwitterApplication.getRestClient();//get singleton client
+        populateTimeline(-1L);//first call, max_id won't be included as parameter in the API call
+
+        setupComposeBehavior();
+
+
+    }
+
+    private void setupComposeBehavior() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_compose);
+        fab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                showComposeDialog();
+                composeFragment.setCustomObjectListener(new PostTwitterListener() {
+                    @Override
+                    public void onPostTwitter(String tweet) {
+                        Toast.makeText(getBaseContext(), tweet, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+
+        });
+
+
+    }
+
+
+
+
+
+    private void showComposeDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        composeFragment = ComposeFragment.newInstance("Some Title");
+        composeFragment.show(fm, "fragment_edit_name");
+    }
+
+
+
+    private void enableInfiniteScroll() {
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(long max_id, int totalItemsCount, RecyclerView view) {
@@ -72,13 +126,8 @@ public class TimelineActivity extends AppCompatActivity {
             }
         };
 
-
         // Add the scroll listener to RecyclerView
         rvTweets.addOnScrollListener(scrollListener);
-
-        twitterClient = TwitterApplication.getRestClient();//get singleton client
-        populateTimeline(-1L);//first call, max_id won't be included as parameter in the API call
-
     }
 
 

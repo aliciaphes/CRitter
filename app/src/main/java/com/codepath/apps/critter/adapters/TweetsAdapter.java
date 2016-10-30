@@ -43,7 +43,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
             ivProfileImage = (ImageView) itemView.findViewById(R.id.iv_profile_image);
             tvUserName = (TextView) itemView.findViewById(R.id.tv_username);
-            tvHandle = (TextView) itemView.findViewById(R.id.tv_handle);
+            tvHandle = (TextView) itemView.findViewById(R.id.tv_handle2);
+            //todo: rename tv_handle
             tvTimestamp = (TextView) itemView.findViewById(R.id.tv_timestamp);
             tvBody = (TextView) itemView.findViewById(R.id.tv_body);
         }
@@ -86,7 +87,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
         holder.tvUserName.setText(tweet.getUser().getName());
 
-        holder.tvHandle.setText(tweet.getUser().getScreenName());
+        holder.tvHandle.setText("@"+tweet.getUser().getScreenName());
 
         holder.tvTimestamp.setText(Utilities.getRelativeTimeAgo(tweet.getCreatedAt()));
 
