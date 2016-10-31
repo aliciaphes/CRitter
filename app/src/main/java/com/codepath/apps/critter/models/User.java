@@ -3,14 +3,23 @@ package com.codepath.apps.critter.models;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 
+@Parcel
 public class User {
-    private String name;
-    private long userID;
-    private String screenName; //handle
-    private String profileURL;
 
+    //fields must be public when using Parceler
+    String name;
+    long userID;
+    String screenName; //handle
+    String profileURL;
+
+
+
+    //Parceler requires an empty constructor:
+    public User(){
+    }
 
     public String getName() {
         return name;

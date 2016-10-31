@@ -4,15 +4,24 @@ package com.codepath.apps.critter.models;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 
+@Parcel
 public class Tweet {
 
-    private String body;
-    private long tweetID;
-    private User user;
-    private String createdAt;
+    //fields must be public when using Parceler
+    String body;
+    long tweetID;
+    User user;
+    String createdAt;
+
+
+    //Parceler requires an empty constructor:
+    public Tweet(){
+    }
+
 
 
     public long getTweetID() {
