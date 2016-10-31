@@ -1,38 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        tools:text="Your tweet here"
-        android:hint="Your tweet here"
-        android:id="@+id/compose_tweet" />
-
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/buttons_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_gravity="end"
+        android:layout_margin="20dp"
         android:orientation="horizontal">
+        <!--android:layout_alignParentBottom="true"-->
 
         <Button
             android:id="@+id/post"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Post" />
+            android:text="Post"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel" />
+            android:text="Cancel"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 
 
-</RelativeLayout>
+    <!--    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <EditText
+                android:id="@+id/compose_tweet"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="20dp"
+                android:hint="Your tweet here"
+                android:inputType="textPersonName" />
+
+            <TextView
+                android:id="@+id/counter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/compose_tweet"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="20dp"
+                tools:text="140" />
+        </RelativeLayout>-->
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6"
+            android:id="@+id/compose_tweet"
+            app:counterEnabled="true"
+            android:layout_margin="20dp"
+            android:paddingTop="20dp"
+            app:counterTextAppearance="@style/counterText"
+            app:counterOverflowTextAppearance="@style/counterOverride">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@null"
+                android:ems="10"
+                android:hint="Your tweet goes here"
+                android:padding="10dp" />
+        </android.support.design.widget.TextInputLayout>
+
+
+
+    <!--            <EditText
+                    android:id="@+id/compose_tweet"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="6"
+                    android:layout_margin="20dp"
+                    android:padding="10dp"
+                    android:maxLines = "4"
+                    android:background="@null"
+                    android:hint="Your tweet here"
+                    android:inputType="textPersonName" />
+                &lt;!&ndash;android:background="@android:color/transparent"&ndash;&gt;
+                <TextView
+                    android:id="@+id/counter"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_margin="20dp"
+                    tools:text="140" />-->
+
+
+
+
+</LinearLayout>

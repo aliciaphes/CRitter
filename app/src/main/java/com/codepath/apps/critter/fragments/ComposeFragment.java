@@ -1,7 +1,10 @@
 package com.codepath.apps.critter.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,21 +20,31 @@ import com.codepath.apps.critter.listeners.PostTwitterListener;
 public class ComposeFragment extends DialogFragment {
 
     private PostTwitterListener postTwitterlistener;
-    private static View composeFragment;
+
+    private static View vComposeFragment;
+
+    private TextInputLayout tiCompose;
+    private EditText etComposeTweet;
+    private Button btnPost;
+
+    private static final int MAX_CHARACTERS_PER_TWEET = 140;
+
 
 
 
 
     public ComposeFragment() {
-        // Empty constructor is required for DialogFragment
+        // Empty constructor required for DialogFragment
     }
 
 
     public static ComposeFragment newInstance(String title) {
         ComposeFragment frag = new ComposeFragment();
+
         Bundle args = new Bundle();
         args.putString("title", title);
         frag.setArguments(args);
+
         return frag;
     }
 
@@ -41,8 +54,8 @@ public class ComposeFragment extends DialogFragment {
         // Set to adjust screen height automatically, when soft keyboard appears on screen
         //getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-        composeFragment = inflater.inflate(R.layout.fragment_compose_tweet, container);
-        return composeFragment;
+        vComposeFragment = inflater.inflate(R.layout.fragment_compose_tweet, container);
+        return vComposeFragment;
     }
 
 
@@ -50,12 +63,12 @@ public class ComposeFragment extends DialogFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setButtonsBehavior(view);
-//        // Get field from view
-//        mEditText = (EditText) view.findViewById(R.id.txt_your_name);
-//        // Fetch arguments from bundle and set title
-//        String title = getArguments().getString("title", "Enter Name");
-//        getDialog().setTitle(title);
+        setViewsAndBehavior(view);
+
+        tiCompose.setCounterMaxLength(MAX_CHARACTERS_PER_TWEET);
+
+        setLengthChecker();
+
 //        // Show soft keyboard automatically and request focus to field
 //        mEditText.requestFocus();
 //        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -63,12 +76,16 @@ public class ComposeFragment extends DialogFragment {
     }
 
 
+
     public void setCustomObjectListener(PostTwitterListener listener) {
         postTwitterlistener = listener;
     }
 
 
-    private void setButtonsBehavior(View v) {
+    private void setViewsAndBehavior(View v) {
+        tiCompose = (TextInputLayout) vComposeFragment.findViewById(R.id.compose_tweet);
+        etComposeTweet = tiCompose.getEditText();
+
         Button btnCancel = (Button) v.findViewById(R.id.cancel);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,12 +94,12 @@ public class ComposeFragment extends DialogFragment {
             }
         });
 
-        Button btnPost = (Button) v.findViewById(R.id.post);
+        btnPost = (Button) v.findViewById(R.id.post);
         btnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText composeTweet = (EditText) composeFragment.findViewById(R.id.compose_tweet);
-                String tweetText = composeTweet.getText().toString();
+
+                String tweetText = etComposeTweet.getText().toString();
 
                 if (tweetText.isEmpty()) {
                     Toast.makeText(getContext(), "Come on, tweet something!", Toast.LENGTH_SHORT).show();
@@ -93,14 +110,48 @@ public class ComposeFragment extends DialogFragment {
         });
     }
 
+
+
     public void onResume() {
         // Get existing layout params for the window
         ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+
         // Assign window properties to fill the parent
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
         params.height = WindowManager.LayoutParams.MATCH_PARENT;
         getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+
         // Call super onResume after sizing
         super.onResume();
     }
+
+
+
+
+    private void setLengthChecker() {
+        etComposeTweet.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int count, int after) {
+                if (text.length() > MAX_CHARACTERS_PER_TWEET) {
+                    btnPost.setEnabled(false);
+                    tiCompose.setError("Tweet must not exceed " + MAX_CHARACTERS_PER_TWEET + " characters");
+                    tiCompose.setErrorEnabled(true);
+                } else {
+                    btnPost.setEnabled(true);
+                    tiCompose.setErrorEnabled(false);
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // do nothing
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //do nothing
+            }
+        });
+    }
+
 }
