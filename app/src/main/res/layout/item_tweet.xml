@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autoLink="all"
-                android:layout_gravity="end"
+                android:layout_gravity="start"
                 android:layout_marginTop="10dp"
                 tools:text="Bacon ipsum dolor amet dolor sausage cillum frankfurter tri-tip. Deserunt eiusmod nulla, proident sausage velit irure hamburger pork loin duis consequat jowl tri-tip prosciutto. Ipsum lorem cow ut ea, pancetta deserunt anim id minim pork loin in boudin. Sed frankfurter ipsum duis ribeye." />
 
