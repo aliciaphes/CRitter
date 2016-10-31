@@ -28,7 +28,7 @@ public class Utilities {
     }
 
 
-    //todo: http://guides.codepath.com/android/Sending-and-Managing-Network-Requests
+    //todo: check network connectivity: guides.codepath.com/android/Sending-and-Managing-Network-Requests
 
 
 

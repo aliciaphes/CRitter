@@ -33,10 +33,12 @@ import cz.msebera.android.httpclient.Header;
 
 public class TimelineActivity extends AppCompatActivity {
 
+    private long index = -1L;
+
     private TwitterClient twitterClient;
     private ArrayList<Tweet> tweets;
 
-    LinearLayoutManager linearLayoutManager;
+    private LinearLayoutManager linearLayoutManager;
 
     private EndlessRecyclerViewScrollListener scrollListener;
 
@@ -53,10 +55,10 @@ public class TimelineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //lvTweets = (ListView) findViewById(R.id.lvTweets);
         rvTweets = (RecyclerView) findViewById(R.id.rvTweets);
 
         tweets = new ArrayList<>();
@@ -64,26 +66,23 @@ public class TimelineActivity extends AppCompatActivity {
         //tweetsAdapter = new z_TweetsArrayAdapter(this, tweets);
         tweetsAdapter = new TweetsAdapter(this, tweets);
 
-        //lvTweets.setAdapter(tweetsAdapter);
         rvTweets.setAdapter(tweetsAdapter);
 
         // Set layout manager to position the items
         linearLayoutManager = new LinearLayoutManager(this);
         rvTweets.setLayoutManager(linearLayoutManager);
 
-
         enableInfiniteScroll();
-
 
         twitterClient = TwitterApplication.getRestClient();//get singleton client
 
-        populateTimeline(-1L);//first call, max_id won't be included as parameter in the API call
+        //first call, max_id is -1 so it won't be included as parameter in the API call
+        populateTimeline(index);
         //populateDummyTimeline();
 
         setupComposeBehavior();
-
-
     }
+
 
     private void setupComposeBehavior() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_compose);
@@ -102,7 +101,7 @@ public class TimelineActivity extends AppCompatActivity {
                          */
                         try {
                             //create dummy tweet
-                            Tweet newTweet = Tweet.fromJSON(new JSONObject(DummyData.dummyTweet));
+                            Tweet newTweet = Tweet.fromJSON(new JSONObject(DummyData.DUMMY_TWEET));
 
                             refreshTimelineAndScrollUp(newTweet);
 
@@ -129,19 +128,22 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onLoadMore(long max_id, int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list of tweets
-
-                //calculate new value for max_id: get the latest tweet and subtract 1
-                Tweet t = tweets.get(tweets.size() - 1);
-                long newMaxId = t.getTweetID();
-                if (newMaxId != 0L) {//make the API call only if it's possible to decrement the ID
-                    populateTimeline(--newMaxId);
-                    //populateDummyTimeline();
-                }
+                populateTimeline(index);
+                //populateDummyTimeline();
             }
         };
 
         // Add the scroll listener to RecyclerView
         rvTweets.addOnScrollListener(scrollListener);
+    }
+
+    private void updateIndex() {
+        //calculate new value for max_id for the API call: get the latest tweet and subtract 1
+        Tweet endTweet = tweets.get(tweets.size() - 1);
+        long endTweetId = endTweet.getTweetID();
+        if (endTweetId != 0L) {//make the API call only if it's possible to decrement the ID
+            index = --endTweetId;
+        }
     }
 
 
@@ -157,18 +159,23 @@ public class TimelineActivity extends AppCompatActivity {
         twitterClient.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                // deserialize the response
-                // create models
-                // load data into the view
+                // deserialize the response and create models
                 ArrayList<Tweet> tweetList = Tweet.fromJSONArray(response);
 
+                //load data into the view:
+
+                //store reference to current size
                 int currentSize = tweets.size();
 
-                //add to existing list
+                //add retrieved tweets to existing list
                 tweets.addAll(tweetList);
 
-                //tweetsAdapter.notifyDataSetChanged();//does nothing
+                //visually refresh the list
                 tweetsAdapter.notifyItemRangeInserted(currentSize, tweetList.size());
+
+                if (!tweetList.isEmpty()) {
+                    updateIndex();
+                }
             }
 
             @Override
@@ -182,7 +189,7 @@ public class TimelineActivity extends AppCompatActivity {
     private void populateDummyTimeline() {
         ArrayList<Tweet> tweetList = null;
         try {
-            tweetList = Tweet.fromJSONArray(new JSONArray(DummyData.dummyTimeline));
+            tweetList = Tweet.fromJSONArray(new JSONArray(DummyData.DUMMY_TIMELINE));
             int currentSize = tweets.size();
             tweets.addAll(tweetList);
             tweetsAdapter.notifyItemRangeInserted(currentSize, tweetList.size());
@@ -212,6 +219,7 @@ public class TimelineActivity extends AppCompatActivity {
             }
         }, tweet);
     }
+
 
     private void refreshTimelineAndScrollUp(Tweet newTweet) {
         tweets.add(0, newTweet);
