@@ -16,91 +16,45 @@
         <!--android:layout_alignParentBottom="true"-->
 
         <Button
-            android:id="@+id/post"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Post"
-            tools:ignore="ButtonStyle" />
-
-        <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="@string/cancel"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:id="@+id/post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/post"
             tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 
 
-    <!--    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <EditText
-                android:id="@+id/compose_tweet"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="20dp"
-                android:hint="Your tweet here"
-                android:inputType="textPersonName" />
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/compose_tweet"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_weight="4"
+        android:paddingTop="20dp"
+        app:counterEnabled="true"
+        app:counterOverflowTextAppearance="@style/counterOverride"
+        app:counterTextAppearance="@style/counterText">
 
-            <TextView
-                android:id="@+id/counter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/compose_tweet"
-                android:layout_alignParentBottom="true"
-                android:layout_margin="20dp"
-                tools:text="140" />
-        </RelativeLayout>-->
-
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="6"
-            android:id="@+id/compose_tweet"
-            app:counterEnabled="true"
-            android:layout_margin="20dp"
-            android:paddingTop="20dp"
-            app:counterTextAppearance="@style/counterText"
-            app:counterOverflowTextAppearance="@style/counterOverride">
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:background="@null"
-                android:ems="10"
-                android:hint="Your tweet goes here"
-                android:padding="10dp" />
-        </android.support.design.widget.TextInputLayout>
-
-
-
-    <!--            <EditText
-                    android:id="@+id/compose_tweet"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="6"
-                    android:layout_margin="20dp"
-                    android:padding="10dp"
-                    android:maxLines = "4"
-                    android:background="@null"
-                    android:hint="Your tweet here"
-                    android:inputType="textPersonName" />
-                &lt;!&ndash;android:background="@android:color/transparent"&ndash;&gt;
-                <TextView
-                    android:id="@+id/counter"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:layout_margin="20dp"
-                    tools:text="140" />-->
-
-
-
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:hint="@string/your_tweet_goes_here"
+            android:padding="10dp"
+            android:scrollbars="vertical" />
+        <!--android:ems="10"-->
+    </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>

@@ -11,7 +11,7 @@
     tools:context=".activities.LoginActivity" >
 
     <TextView
-        android:text="Welcome to CRitter!"
+        android:text="@string/welcome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
+        android:contentDescription="Logo"
         app:srcCompat="@drawable/twitter_circle_color"
         android:id="@+id/logo" />
 

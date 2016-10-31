@@ -43,8 +43,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
             ivProfileImage = (ImageView) itemView.findViewById(R.id.iv_profile_image);
             tvUserName = (TextView) itemView.findViewById(R.id.tv_username);
-            tvHandle = (TextView) itemView.findViewById(R.id.tv_handle2);
-            //todo: rename tv_handle
+            tvHandle = (TextView) itemView.findViewById(R.id.tv_handle);
             tvTimestamp = (TextView) itemView.findViewById(R.id.tv_timestamp);
             tvBody = (TextView) itemView.findViewById(R.id.tv_body);
         }
@@ -83,7 +82,9 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         //clear image in case it had a previous value
         holder.ivProfileImage.setImageResource(android.R.color.transparent);//Color.parseColor("#80000000")
         //then load image with Picasso
-        Picasso.with(getContext()).load(tweet.getUser().getProfileURL()).into(holder.ivProfileImage);
+        Picasso.with(getContext()).load(tweet.getUser().getProfileURL())
+                .placeholder(R.drawable.placeholder)
+                .into(holder.ivProfileImage);
 
         holder.tvUserName.setText(tweet.getUser().getName());
 

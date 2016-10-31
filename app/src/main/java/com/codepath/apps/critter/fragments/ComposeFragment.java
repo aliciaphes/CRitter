@@ -65,13 +65,15 @@ public class ComposeFragment extends DialogFragment {
 
         setViewsAndBehavior(view);
 
-        tiCompose.setCounterMaxLength(MAX_CHARACTERS_PER_TWEET);
-
         setLengthChecker();
 
-//        // Show soft keyboard automatically and request focus to field
-//        mEditText.requestFocus();
-//        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        // Show soft keyboard automatically and request focus to field
+        etComposeTweet.requestFocus();
+        try {
+            getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -84,7 +86,14 @@ public class ComposeFragment extends DialogFragment {
 
     private void setViewsAndBehavior(View v) {
         tiCompose = (TextInputLayout) vComposeFragment.findViewById(R.id.compose_tweet);
+        tiCompose.setCounterMaxLength(MAX_CHARACTERS_PER_TWEET);
+
         etComposeTweet = tiCompose.getEditText();
+        try {
+            etComposeTweet.setEms(MAX_CHARACTERS_PER_TWEET);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
         Button btnCancel = (Button) v.findViewById(R.id.cancel);
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +123,12 @@ public class ComposeFragment extends DialogFragment {
 
     public void onResume() {
         // Get existing layout params for the window
-        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+        ViewGroup.LayoutParams params = null;
+        try {
+            params = getDialog().getWindow().getAttributes();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
         // Assign window properties to fill the parent
         params.width = WindowManager.LayoutParams.MATCH_PARENT;

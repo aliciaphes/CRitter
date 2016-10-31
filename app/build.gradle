@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.3"
 
     defaultConfig {
         applicationId "com.codepath.apps.critter"
@@ -29,6 +29,7 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
+apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 def dbflow_version = "3.1.1"

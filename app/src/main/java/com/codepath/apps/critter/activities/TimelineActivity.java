@@ -19,6 +19,7 @@ import com.codepath.apps.critter.fragments.ComposeFragment;
 import com.codepath.apps.critter.listeners.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.critter.listeners.PostTwitterListener;
 import com.codepath.apps.critter.models.Tweet;
+import com.codepath.apps.critter.util.Utilities;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -39,7 +40,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     private EndlessRecyclerViewScrollListener scrollListener;
 
-    //private TweetsArrayAdapter tweetsAdapter;
+    //private z_TweetsArrayAdapter tweetsAdapter;
     private TweetsAdapter tweetsAdapter;
 
     //private ListView lvTweets;
@@ -60,7 +61,7 @@ public class TimelineActivity extends AppCompatActivity {
 
         tweets = new ArrayList<>();
 
-        //tweetsAdapter = new TweetsArrayAdapter(this, tweets);
+        //tweetsAdapter = new z_TweetsArrayAdapter(this, tweets);
         tweetsAdapter = new TweetsAdapter(this, tweets);
 
         //lvTweets.setAdapter(tweetsAdapter);
@@ -89,115 +90,32 @@ public class TimelineActivity extends AppCompatActivity {
                 showComposeDialog();
                 composeFragment.setCustomObjectListener(new PostTwitterListener() {
                     @Override
-                    public void onPostTwitter(String tweet) {
+                    public void onPostTwitter(String tweetBody) {
                         composeFragment.dismiss();
 
-                        //postTweet(tweet); //todo: UNCOMMENT!!
+                        //postTweet(tweetBody);
 
-                        Tweet t = null;
+                        /** BEGIN
+                         This block is to be deleted, only used to avoid tweeting every time I test.
+                         ALSO DO NOT FORGET TO UNCOMMENT THE ABOVE CALL TO postTweet!!
+                         */
                         try {
-                            t = Tweet.fromJSON(new JSONObject("{\n" +
-                                    "  \"coordinates\": null,\n" +
-                                    "  \"favorited\": false,\n" +
-                                    "  \"created_at\": \"Wed Sep 05 00:37:15 +0000 2012\",\n" +
-                                    "  \"truncated\": false,\n" +
-                                    "  \"id_str\": \"243145735212777472\",\n" +
-                                    "  \"entities\": {\n" +
-                                    "    \"urls\": [\n" +
-                                    "\n" +
-                                    "    ],\n" +
-                                    "    \"hashtags\": [\n" +
-                                    "      {\n" +
-                                    "        \"text\": \"peterfalk\",\n" +
-                                    "        \"indices\": [\n" +
-                                    "          35,\n" +
-                                    "          45\n" +
-                                    "        ]\n" +
-                                    "      }\n" +
-                                    "    ],\n" +
-                                    "    \"user_mentions\": [\n" +
-                                    "\n" +
-                                    "    ]\n" +
-                                    "  },\n" +
-                                    "  \"in_reply_to_user_id_str\": null,\n" +
-                                    "  \"text\": \"Maybe he'll finally find his keys. #peterfalk\",\n" +
-                                    "  \"contributors\": null,\n" +
-                                    "  \"retweet_count\": 0,\n" +
-                                    "  \"id\": 243145735212777472,\n" +
-                                    "  \"in_reply_to_status_id_str\": null,\n" +
-                                    "  \"geo\": null,\n" +
-                                    "  \"retweeted\": false,\n" +
-                                    "  \"in_reply_to_user_id\": null,\n" +
-                                    "  \"place\": null,\n" +
-                                    "  \"user\": {\n" +
-                                    "    \"name\": \"Jason Costa\",\n" +
-                                    "    \"profile_sidebar_border_color\": \"86A4A6\",\n" +
-                                    "    \"profile_sidebar_fill_color\": \"A0C5C7\",\n" +
-                                    "    \"profile_background_tile\": false,\n" +
-                                    "    \"profile_image_url\": \"http://a0.twimg.com/profile_images/1751674923/new_york_beard_normal.jpg\",\n" +
-                                    "    \"created_at\": \"Wed May 28 00:20:15 +0000 2008\",\n" +
-                                    "    \"location\": \"\",\n" +
-                                    "    \"is_translator\": true,\n" +
-                                    "    \"follow_request_sent\": false,\n" +
-                                    "    \"id_str\": \"14927800\",\n" +
-                                    "    \"profile_link_color\": \"FF3300\",\n" +
-                                    "    \"entities\": {\n" +
-                                    "      \"url\": {\n" +
-                                    "        \"urls\": [\n" +
-                                    "          {\n" +
-                                    "            \"expanded_url\": \"http://www.jason-costa.blogspot.com/\",\n" +
-                                    "            \"url\": \"http://t.co/YCA3ZKY\",\n" +
-                                    "            \"indices\": [\n" +
-                                    "              0,\n" +
-                                    "              19\n" +
-                                    "            ],\n" +
-                                    "            \"display_url\": \"jason-costa.blogspot.com\"\n" +
-                                    "          }\n" +
-                                    "        ]\n" +
-                                    "      },\n" +
-                                    "      \"description\": {\n" +
-                                    "        \"urls\": []\n" +
-                                    "      }\n" +
-                                    "    },\n" +
-                                    "    \"default_profile\": false,\n" +
-                                    "    \"contributors_enabled\": false,\n" +
-                                    "    \"url\": \"http://t.co/YCA3ZKY\",\n" +
-                                    "    \"favourites_count\": 883,\n" +
-                                    "    \"utc_offset\": -28800,\n" +
-                                    "    \"id\": 14927800,\n" +
-                                    "    \"profile_image_url_https\": \"https://si0.twimg.com/profile_images/1751674923/new_york_beard_normal.jpg\",\n" +
-                                    "    \"profile_use_background_image\": true,\n" +
-                                    "    \"listed_count\": 150,\n" +
-                                    "    \"profile_text_color\": \"333333\",\n" +
-                                    "    \"protected\": false,\n" +
-                                    "    \"lang\": \"en\",\n" +
-                                    "    \"followers_count\": 8760,\n" +
-                                    "    \"time_zone\": \"Pacific Time (US & Canada)\",\n" +
-                                    "    \"profile_background_image_url_https\": \"https://si0.twimg.com/images/themes/theme6/bg.gif\",\n" +
-                                    "    \"verified\": false,\n" +
-                                    "    \"profile_background_color\": \"709397\",\n" +
-                                    "    \"notifications\": false,\n" +
-                                    "    \"description\": \"Platform at Twitter\",\n" +
-                                    "    \"geo_enabled\": true,\n" +
-                                    "    \"statuses_count\": 5532,\n" +
-                                    "    \"default_profile_image\": false,\n" +
-                                    "    \"friends_count\": 166,\n" +
-                                    "    \"profile_background_image_url\": \"http://a0.twimg.com/images/themes/theme6/bg.gif\",\n" +
-                                    "    \"show_all_inline_media\": true,\n" +
-                                    "    \"screen_name\": \"jasoncosta\",\n" +
-                                    "    \"following\": false\n" +
-                                    "  }}"));
+                            //create dummy tweet
+                            Tweet newTweet = Tweet.fromJSON(new JSONObject(Utilities.dummyTweet));
+
+                            int currentSize = tweets.size();
+                            tweets.add(0, newTweet);
+                            tweetsAdapter.notifyItemRangeInserted(currentSize, 1); //tweets.size()
+                            scrollListener.resetState();
+
+                            Toast.makeText(getBaseContext(), "Twitter was added", Toast.LENGTH_SHORT).show();
+
+                            //make sure we take new tweet is displayed on timeline:
+                            rvTweets.scrollToPosition(0);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-                        int currentSize = tweets.size();
-                        tweets.add(0, t);
-                        tweetsAdapter.notifyItemRangeInserted(currentSize, 1);
-                        scrollListener.resetState();
-
-                        Toast.makeText(getBaseContext(), "Twitter was added", Toast.LENGTH_SHORT).show();
-
+                        /** END */
                     }
                 });
             }
@@ -205,14 +123,11 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
 
-
-
     private void showComposeDialog() {
         FragmentManager fm = getSupportFragmentManager();
-        composeFragment = ComposeFragment.newInstance("Some Title");
-        composeFragment.show(fm, "fragment_edit_name");
+        composeFragment = ComposeFragment.newInstance("Compose tweet");
+        composeFragment.show(fm, "fragment_add_tweet");
     }
-
 
 
     private void enableInfiniteScroll() {
@@ -234,10 +149,6 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.addOnScrollListener(scrollListener);
     }
 
-
-    //todo: http://guides.codepath.com/android/Sending-and-Managing-Network-Requests
-
-    //todo: empty space at end of recyclerview
 
     //todo: improve API calls by adding since_id
 
@@ -275,21 +186,24 @@ public class TimelineActivity extends AppCompatActivity {
 
 
     private void postTweet(String tweet) {
-        twitterClient.postTweet(new JsonHttpResponseHandler(){
+        twitterClient.postTweet(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 //super.onSuccess(statusCode, headers, response);
 
                 //get new tweet that was generated
-                Tweet t = Tweet.fromJSON(response);
+                Tweet newTweet = Tweet.fromJSON(response);
+                //newTweet = Tweet.fromJSON(new JSONObject(Utilities.dummyTweet));
 
                 int currentSize = tweets.size();
-                tweets.add(0, t);
-                tweetsAdapter.notifyItemRangeInserted(currentSize, tweets.size());
+                tweets.add(0, newTweet);
+                tweetsAdapter.notifyItemRangeInserted(currentSize, 1); //tweets.size()
+                scrollListener.resetState();
 
                 Toast.makeText(getBaseContext(), "Twitter was added", Toast.LENGTH_SHORT).show();
 
-                //take user back to timeline
+                //make sure we take new tweet is displayed on timeline:
+                rvTweets.scrollToPosition(0);
             }
 
             @Override

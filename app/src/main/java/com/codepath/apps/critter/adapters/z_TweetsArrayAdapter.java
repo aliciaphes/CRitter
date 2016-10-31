@@ -17,10 +17,10 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 
-public class TweetsArrayAdapter extends ArrayAdapter<Tweet>{
+public class z_TweetsArrayAdapter extends ArrayAdapter<Tweet>{
 
 
-    public TweetsArrayAdapter(Context context, List<Tweet> tweets) {
+    public z_TweetsArrayAdapter(Context context, List<Tweet> tweets) {
         super(context, 0 ,tweets);
     }
 
@@ -37,7 +37,8 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet>{
         //clear image in case it had a previous value
         ivProfileImage.setImageResource(android.R.color.transparent);//Color.parseColor("#80000000")
         //then load image with Picasso
-        Picasso.with(getContext()).load(tweet.getUser().getProfileURL()).into(ivProfileImage);
+        String profileURL = tweet.getUser().getProfileURL();
+        Picasso.with(getContext()).load(profileURL).into(ivProfileImage);
 
         TextView tvUserName = (TextView) convertView.findViewById(R.id.tv_username);
         tvUserName.setText(tweet.getUser().getName());
