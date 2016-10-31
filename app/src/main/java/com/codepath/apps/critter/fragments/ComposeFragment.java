@@ -149,7 +149,7 @@ public class ComposeFragment extends DialogFragment {
             public void onTextChanged(CharSequence text, int start, int count, int after) {
                 if (text.length() > MAX_CHARACTERS_PER_TWEET) {
                     btnPost.setEnabled(false);
-                    tiCompose.setError("Tweet must not exceed " + MAX_CHARACTERS_PER_TWEET + " characters");
+                    tiCompose.setError("Tweet must not exceed " + MAX_CHARACTERS_PER_TWEET + " chars");
                     tiCompose.setErrorEnabled(true);
                 } else {
                     btnPost.setEnabled(true);

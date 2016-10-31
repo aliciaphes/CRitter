@@ -19,7 +19,7 @@ import com.codepath.apps.critter.fragments.ComposeFragment;
 import com.codepath.apps.critter.listeners.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.critter.listeners.PostTwitterListener;
 import com.codepath.apps.critter.models.Tweet;
-import com.codepath.apps.critter.util.Utilities;
+import com.codepath.apps.critter.util.DummyData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -76,7 +76,9 @@ public class TimelineActivity extends AppCompatActivity {
 
 
         twitterClient = TwitterApplication.getRestClient();//get singleton client
+
         populateTimeline(-1L);//first call, max_id won't be included as parameter in the API call
+        //populateDummyTimeline();
 
         setupComposeBehavior();
 
@@ -94,24 +96,16 @@ public class TimelineActivity extends AppCompatActivity {
                         composeFragment.dismiss();
 
                         //postTweet(tweetBody);
-
                         /** BEGIN
                          This block is to be deleted, only used to avoid tweeting every time I test.
                          ALSO DO NOT FORGET TO UNCOMMENT THE ABOVE CALL TO postTweet!!
                          */
                         try {
                             //create dummy tweet
-                            Tweet newTweet = Tweet.fromJSON(new JSONObject(Utilities.dummyTweet));
+                            Tweet newTweet = Tweet.fromJSON(new JSONObject(DummyData.dummyTweet));
 
-                            int currentSize = tweets.size();
-                            tweets.add(0, newTweet);
-                            tweetsAdapter.notifyItemRangeInserted(currentSize, 1); //tweets.size()
-                            scrollListener.resetState();
+                            refreshTimelineAndScrollUp(newTweet);
 
-                            Toast.makeText(getBaseContext(), "Twitter was added", Toast.LENGTH_SHORT).show();
-
-                            //make sure we take new tweet is displayed on timeline:
-                            rvTweets.scrollToPosition(0);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -141,6 +135,7 @@ public class TimelineActivity extends AppCompatActivity {
                 long newMaxId = t.getTweetID();
                 if (newMaxId != 0L) {//make the API call only if it's possible to decrement the ID
                     populateTimeline(--newMaxId);
+                    //populateDummyTimeline();
                 }
             }
         };
@@ -170,7 +165,6 @@ public class TimelineActivity extends AppCompatActivity {
                 int currentSize = tweets.size();
 
                 //add to existing list
-                //tweetsAdapter.addAll(tweets);
                 tweets.addAll(tweetList);
 
                 //tweetsAdapter.notifyDataSetChanged();//does nothing
@@ -185,6 +179,20 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
 
+    private void populateDummyTimeline() {
+        ArrayList<Tweet> tweetList = null;
+        try {
+            tweetList = Tweet.fromJSONArray(new JSONArray(DummyData.dummyTimeline));
+            int currentSize = tweets.size();
+            tweets.addAll(tweetList);
+            tweetsAdapter.notifyItemRangeInserted(currentSize, tweetList.size());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     private void postTweet(String tweet) {
         twitterClient.postTweet(new JsonHttpResponseHandler() {
             @Override
@@ -195,15 +203,7 @@ public class TimelineActivity extends AppCompatActivity {
                 Tweet newTweet = Tweet.fromJSON(response);
                 //newTweet = Tweet.fromJSON(new JSONObject(Utilities.dummyTweet));
 
-                int currentSize = tweets.size();
-                tweets.add(0, newTweet);
-                tweetsAdapter.notifyItemRangeInserted(currentSize, 1); //tweets.size()
-                scrollListener.resetState();
-
-                Toast.makeText(getBaseContext(), "Twitter was added", Toast.LENGTH_SHORT).show();
-
-                //make sure we take new tweet is displayed on timeline:
-                rvTweets.scrollToPosition(0);
+                refreshTimelineAndScrollUp(newTweet);
             }
 
             @Override
@@ -211,6 +211,17 @@ public class TimelineActivity extends AppCompatActivity {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         }, tweet);
+    }
+
+    private void refreshTimelineAndScrollUp(Tweet newTweet) {
+        tweets.add(0, newTweet);
+
+        tweetsAdapter.notifyItemInserted(0);
+
+        Toast.makeText(getBaseContext(), "Twitter was added", Toast.LENGTH_SHORT).show();
+
+        //make sure we take new tweet is displayed on timeline:
+        rvTweets.scrollToPosition(0);
     }
 
 
