@@ -3,6 +3,7 @@ package com.codepath.apps.critter.activities;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,6 +51,8 @@ public class TimelineActivity extends AppCompatActivity {
 
     private ComposeFragment composeFragment;
 
+    SwipeRefreshLayout swipeContainer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +83,54 @@ public class TimelineActivity extends AppCompatActivity {
         populateTimeline(index);
         //populateDummyTimeline();
 
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        setRefreshOnSwipe();
+
+        enableClickableTweets();
+
         setupComposeBehavior();
+    }
+
+
+    private void setRefreshOnSwipe() {
+//        SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                //behavior
+//            }
+//        };
+//        swipeContainer.setOnRefreshListener(onRefreshListener);
+
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                int size = tweets.size();
+                tweets.clear();
+                //tweetsAdapter.clear();
+                //notify the changes
+                tweetsAdapter.notifyItemRangeRemoved(0, size);
+
+                //reset index and call get home timeline again
+                index = -1L;
+                populateTimeline(index);
+
+            }
+        });
+
+    }
+
+
+    private void enableClickableTweets() {
+//        ItemClickSupport.addTo(rvTweets).setOnItemClickListener(
+//                new ItemClickSupport.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+//                        //todo: launch intent
+//                    }
+//                }
+//        );
     }
 
 
@@ -176,6 +226,7 @@ public class TimelineActivity extends AppCompatActivity {
                 if (!tweetList.isEmpty()) {
                     updateIndex();
                 }
+                swipeContainer.setRefreshing(false);
             }
 
             @Override

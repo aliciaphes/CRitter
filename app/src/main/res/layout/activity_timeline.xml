@@ -28,24 +28,31 @@
             android:id="@+id/lvTweets" />-->
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvTweets"
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-    <!--        android:layout_gravity="fill_vertical"-->
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvTweets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <!-- android:layout_gravity="fill_vertical"-->
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_compose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/fab_compose"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_create_white_48dp"
+        app:backgroundTint="@android:color/holo_blue_light"
         app:layout_anchor="@id/rvTweets"
-        app:layout_anchorGravity="bottom|right|end"
-        app:backgroundTint="@android:color/holo_blue_light" />
+        app:layout_anchorGravity="bottom|right|end" />
 
 
 </android.support.design.widget.CoordinatorLayout>
