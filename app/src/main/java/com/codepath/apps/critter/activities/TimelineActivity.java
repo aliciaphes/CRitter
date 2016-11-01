@@ -27,7 +27,6 @@ import com.codepath.apps.critter.util.Utilities;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
@@ -148,21 +147,19 @@ public class TimelineActivity extends AppCompatActivity {
                     public void onPostTwitter(String tweetBody) {
                         composeFragment.dismiss();
 
-                        //postTweet(tweetBody);
-                        /** BEGIN
-                         This block is to be deleted, only used to avoid tweeting every time I test.
+                        /** BEGIN IMPORTANT BLOCK */
+                        postTweet(tweetBody);
+                        /** This block is to be commented/deleted, only used to avoid tweeting every time I test.
                          ALSO DO NOT FORGET TO UNCOMMENT THE ABOVE CALL TO postTweet!!
                          */
-                        try {
-                            //create dummy tweet
-                            Tweet newTweet = Tweet.fromJSON(new JSONObject(DummyData.DUMMY_TWEET));
-
-                            refreshTimelineAndScrollUp(newTweet);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        /** END */
+//                        try {
+//                            //create dummy tweet
+//                            Tweet newTweet = Tweet.fromJSON(new JSONObject(DummyData.DUMMY_TWEET));
+//                            refreshTimelineAndScrollUp(newTweet);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+                        /** END IMPORTANT BLOCK */
                     }
                 });
             }
