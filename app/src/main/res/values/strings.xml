@@ -8,4 +8,6 @@
     <string name="your_tweet_goes_here">Your tweet goes here</string>
     <string name="profile_picture">Profile picture</string>
     <string name="welcome">Welcome to CRitter!</string>
+    <string name="on_user_exception">User exception detected, possibly too many calls</string>
+    <string name="device_not_connected">Device is not connected</string>
 </resources>

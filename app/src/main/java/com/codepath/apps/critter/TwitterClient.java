@@ -10,7 +10,6 @@ import org.scribe.builder.api.Api;
 import org.scribe.builder.api.TwitterApi;
 
 
-//todo: javadoc all code
 
 
 /*

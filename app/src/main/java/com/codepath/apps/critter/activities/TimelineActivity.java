@@ -1,5 +1,6 @@
 package com.codepath.apps.critter.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
@@ -18,14 +19,17 @@ import com.codepath.apps.critter.TwitterClient;
 import com.codepath.apps.critter.adapters.TweetsAdapter;
 import com.codepath.apps.critter.fragments.ComposeFragment;
 import com.codepath.apps.critter.listeners.EndlessRecyclerViewScrollListener;
+import com.codepath.apps.critter.listeners.OnItemClickListener;
 import com.codepath.apps.critter.listeners.PostTwitterListener;
 import com.codepath.apps.critter.models.Tweet;
 import com.codepath.apps.critter.util.DummyData;
+import com.codepath.apps.critter.util.Utilities;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -93,14 +97,6 @@ public class TimelineActivity extends AppCompatActivity {
 
 
     private void setRefreshOnSwipe() {
-//        SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                //behavior
-//            }
-//        };
-//        swipeContainer.setOnRefreshListener(onRefreshListener);
-
 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -115,7 +111,6 @@ public class TimelineActivity extends AppCompatActivity {
                 //reset index and call get home timeline again
                 index = -1L;
                 populateTimeline(index);
-
             }
         });
 
@@ -123,14 +118,23 @@ public class TimelineActivity extends AppCompatActivity {
 
 
     private void enableClickableTweets() {
-//        ItemClickSupport.addTo(rvTweets).setOnItemClickListener(
-//                new ItemClickSupport.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-//                        //todo: launch intent
-//                    }
-//                }
-//        );
+        tweetsAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+                //create intent here to view
+                Intent viewTweetIntent = new Intent(TimelineActivity.this, TweetActivity.class);
+
+                //retrieve tweet that was clicked
+                Tweet tweet = tweets.get(position);
+
+                //set it as extra
+                viewTweetIntent.putExtra("tweet", Parcels.wrap(tweet));
+
+                //launch intent
+                startActivity(viewTweetIntent);
+            }
+        });
     }
 
 
@@ -206,69 +210,88 @@ public class TimelineActivity extends AppCompatActivity {
     //and fill the recyclerview with the data retrieved
     //by creating tweet objects
     private void populateTimeline(long maxId) {
-        twitterClient.getHomeTimeline(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                // deserialize the response and create models
-                ArrayList<Tweet> tweetList = Tweet.fromJSONArray(response);
 
-                //load data into the view:
+        //check connectivity:
+        if (Utilities.isNetworkAvailable(this) && Utilities.isOnline()) {
 
-                //store reference to current size
-                int currentSize = tweets.size();
+            twitterClient.getHomeTimeline(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                    // deserialize the response and create models
+                    ArrayList<Tweet> tweetList = Tweet.fromJSONArray(response);
 
-                //add retrieved tweets to existing list
-                tweets.addAll(tweetList);
+                    //load data into the view:
 
-                //visually refresh the list
-                tweetsAdapter.notifyItemRangeInserted(currentSize, tweetList.size());
+                    //store reference to current size
+                    int currentSize = tweets.size();
 
-                if (!tweetList.isEmpty()) {
-                    updateIndex();
+                    //add retrieved tweets to existing list
+                    tweets.addAll(tweetList);
+
+                    //visually refresh the list
+                    tweetsAdapter.notifyItemRangeInserted(currentSize, tweetList.size());
+
+                    if (!tweetList.isEmpty()) {
+                        updateIndex();
+                    }
+                    swipeContainer.setRefreshing(false);
                 }
-                swipeContainer.setRefreshing(false);
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        }, maxId);
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    Toast.makeText(getBaseContext(), "Error in request", Toast.LENGTH_SHORT).show();
+                }
+
+
+                @Override
+                public void onUserException(Throwable error) {
+                    Toast.makeText(getBaseContext(), R.string.on_user_exception, Toast.LENGTH_SHORT).show();
+                }
+            }, maxId);
+        }else{
+            Toast.makeText(getBaseContext(), R.string.device_not_connected, Toast.LENGTH_SHORT).show();
+        }
     }
 
 
     private void populateDummyTimeline() {
         ArrayList<Tweet> tweetList = null;
-        try {
-            tweetList = Tweet.fromJSONArray(new JSONArray(DummyData.DUMMY_TIMELINE));
-            int currentSize = tweets.size();
-            tweets.addAll(tweetList);
-            tweetsAdapter.notifyItemRangeInserted(currentSize, tweetList.size());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+        JSONArray jsonArray = DummyData.getDummyTimeline();
+        tweetList = Tweet.fromJSONArray(jsonArray);
+        int currentSize = tweets.size();
+        tweets.addAll(tweetList);
+        tweetsAdapter.notifyItemRangeInserted(currentSize, tweetList.size());
     }
 
 
     private void postTweet(String tweet) {
-        twitterClient.postTweet(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                //super.onSuccess(statusCode, headers, response);
+        if (Utilities.isNetworkAvailable(this) && Utilities.isOnline()) {
+            twitterClient.postTweet(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    //super.onSuccess(statusCode, headers, response);
 
-                //get new tweet that was generated
-                Tweet newTweet = Tweet.fromJSON(response);
-                //newTweet = Tweet.fromJSON(new JSONObject(Utilities.dummyTweet));
+                    //get new tweet that was generated
+                    Tweet newTweet = Tweet.fromJSON(response);
+                    //newTweet = Tweet.fromJSON(new JSONObject(Utilities.dummyTweet));
 
-                refreshTimelineAndScrollUp(newTweet);
-            }
+                    refreshTimelineAndScrollUp(newTweet);
+                }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        }, tweet);
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    Toast.makeText(getBaseContext(), "Error in request", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onUserException(Throwable error) {
+                    Toast.makeText(getBaseContext(), R.string.on_user_exception, Toast.LENGTH_SHORT).show();
+                }
+
+            }, tweet);
+        }else{
+            Toast.makeText(getBaseContext(), R.string.device_not_connected, Toast.LENGTH_SHORT).show();
+        }
     }
 
 

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.apps.critter.R;
+import com.codepath.apps.critter.listeners.OnItemClickListener;
 import com.codepath.apps.critter.models.Tweet;
 import com.codepath.apps.critter.util.Utilities;
 import com.squareup.picasso.Picasso;
@@ -22,8 +23,22 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     private List<Tweet> tweets;
 
+    private static OnItemClickListener listener;
+    //Listener interface defined in OnItemClickListener.java
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+
+
+    // Define the method that allows the parent activity to define the listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+
+
+    /***** Creating ViewHolder *****/
+
+    public static class ViewHolder extends RecyclerView.ViewHolder{
         // holder should contain a member variable
         // for any view that will be set to render a row
 
@@ -36,7 +51,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
@@ -46,8 +61,25 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvHandle = (TextView) itemView.findViewById(R.id.tv_handle);
             tvTimestamp = (TextView) itemView.findViewById(R.id.tv_timestamp);
             tvBody = (TextView) itemView.findViewById(R.id.tv_body);
+
+
+
+            // Attach a click listener to the 'row' by bubbling up
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Triggers click upwards to the adapter on click
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(itemView, position);
+                        }
+                    }
+                }
+            });
+
         }
-    }
+    }//end class ViewHolder
 
     public TweetsAdapter(Context c, List<Tweet> tweets) {
         context = c;
@@ -95,10 +127,13 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         holder.tvBody.setText(tweet.getBody());
     }
 
+
+
     @Override
     public int getItemCount() {
         return tweets.size();
     }
+
 
 
 }
