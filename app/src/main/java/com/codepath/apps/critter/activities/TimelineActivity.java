@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,7 +54,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     private ComposeFragment composeFragment;
 
-    //SwipeRefreshLayout swipeContainer;
+    SwipeRefreshLayout swipeContainer;
 
 
     @Override
@@ -68,7 +69,6 @@ public class TimelineActivity extends AppCompatActivity {
 
         tweets = new ArrayList<>();
 
-        //tweetsAdapter = new z_TweetsArrayAdapter(this, tweets);
         tweetsAdapter = new TweetsAdapter(this, tweets);
 
         rvTweets.setAdapter(tweetsAdapter);
@@ -82,11 +82,11 @@ public class TimelineActivity extends AppCompatActivity {
         twitterClient = TwitterApplication.getRestClient();//get singleton client
 
         //first call, max_id is -1 so it won't be included as parameter in the API call
-        populateTimeline(index);
-        //populateDummyTimeline();
+        //populateTimeline(index);
+        populateDummyTimeline();
 
-        //swipeContainer = (SwipeRefreshLayout) findViewById(swipeContainer);
-        //setRefreshOnSwipe();
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        setRefreshOnSwipe();
 
         enableClickableTweets();
 
@@ -94,25 +94,27 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
 
-//    private void setRefreshOnSwipe() {
-//
-//        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//
-//                int size = tweets.size();
-//                tweets.clear();
-//                //tweetsAdapter.clear();
-//                //notify the changes
-//                tweetsAdapter.notifyItemRangeRemoved(0, size);
-//
-//                //reset index and call get home timeline again
-//                index = -1L;
-//                populateTimeline(index);
-//            }
-//        });
-//
-//    }
+    private void setRefreshOnSwipe() {
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                int size = tweets.size();
+                tweets.clear();
+                //tweetsAdapter.clear();
+                //notify the changes
+                tweetsAdapter.notifyItemRangeRemoved(0, size);
+
+                //reset index and call get home timeline again
+                index = -1L;
+                //populateTimeline(index);
+                populateDummyTimeline();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+
+    }
 
 
     private void enableClickableTweets() {
@@ -178,8 +180,8 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onLoadMore(long max_id, int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list of tweets
-                populateTimeline(index);
-                //populateDummyTimeline();
+                //populateTimeline(index);
+                populateDummyTimeline();
             }
         };
 
@@ -230,7 +232,7 @@ public class TimelineActivity extends AppCompatActivity {
                     if (!tweetList.isEmpty()) {
                         updateIndex();
                     }
-                    //swipeContainer.setRefreshing(false);
+                    swipeContainer.setRefreshing(false);
                 }
 
                 @Override
@@ -251,9 +253,8 @@ public class TimelineActivity extends AppCompatActivity {
 
 
     private void populateDummyTimeline() {
-        ArrayList<Tweet> tweetList = null;
-        JSONArray jsonArray = DummyData.getDummyTimeline();
-        tweetList = Tweet.fromJSONArray(jsonArray);
+        JSONArray jsonArray = DummyData.getDummyTimeline(this);
+        ArrayList<Tweet> tweetList = Tweet.fromJSONArray(jsonArray);
         int currentSize = tweets.size();
         tweets.addAll(tweetList);
         tweetsAdapter.notifyItemRangeInserted(currentSize, tweetList.size());

@@ -1,10 +1,18 @@
 package com.codepath.apps.critter.util;
 
 
+import android.content.Context;
+
 import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class DummyData {
 
+
+    public static final String FILE_NAME = "DummyTimeline.txt";
 
     public static final String DUMMY_TWEET = "{\n" +
             "  \"coordinates\": null,\n" +
@@ -41,16 +49,11 @@ public class DummyData {
             "  \"place\": null,\n" +
             "  \"user\": {\n" +
             "    \"name\": \"Dummy Tweeter\",\n" +
-            "    \"profile_sidebar_border_color\": \"86A4A6\",\n" +
-            "    \"profile_sidebar_fill_color\": \"A0C5C7\",\n" +
-            "    \"profile_background_tile\": false,\n" +
             "    \"profile_image_url\": \"http://a0.twimg.com/profile_images/1751674923/new_york_beard_normal.jpg\",\n" +
             "    \"created_at\": \"Wed May 28 00:20:15 +0000 2008\",\n" +
-            "    \"location\": \"\",\n" +
             "    \"is_translator\": true,\n" +
             "    \"follow_request_sent\": false,\n" +
             "    \"id_str\": \"14927800\",\n" +
-            "    \"profile_link_color\": \"FF3300\",\n" +
             "    \"entities\": {\n" +
             "      \"url\": {\n" +
             "        \"urls\": [\n" +
@@ -99,10 +102,80 @@ public class DummyData {
             "  }}";
 
 
-    public static JSONArray getDummyTimeline() {
+    public static JSONArray getDummyTimeline(Context context) {
         JSONArray jsonArray = new JSONArray();
-        //todo: ...reading from json file goes here...
+
+
+        //todo: ...reading from json file (using background thread) goes here...
+
+        String str = loadJSONFromFile(context);
+
+        //the file already contains the array we need
+
+
+        try {
+            jsonArray = new JSONArray(str);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return jsonArray;
     }
+
+
+//        JSONParser parser = new JSONParser();
+//        Object obj = parser.parse(new FileReader(PATH));
+//        JSONObject jsonObject = (JSONObject) obj;
+
+
+
+//        JsonReader reader = new JsonReader(new InputStreamReader(PATH, "UTF-8"));
+//        JSONObject obj = reader.readObject();
+
+
+
+
+
+
+/*        JsonReader reader = new JsonReader(new InputStreamReader(PATH, "UTF-8"));
+        reader.beginArray();
+        while (reader.hasNext()) {
+            messages.add(readMessage(reader));
+        }
+        reader.endArray();
+        reader.close();
+        return messages;*/
+
+
+
+
+//    //Using GSON lib:
+//    Gson gson = new Gson();
+//    String data="[{\"A\":\"a\",\"B\":\"b\",\"C\":\"c\",\"D\":\"d\",\"E\":\"e\",\"F\":\"f\",\"G\":\"g\"}]";
+//    JsonParser jsonParser = new JsonParser();
+//    JsonArray jsonArray = (JsonArray) jsonParser.parse(data);
+
+
+
+
+
+    public static String loadJSONFromFile(Context context)  {
+        String json;
+        InputStream is;
+
+        try {
+            //is = new FileInputStream(FILE_NAME);
+            is = context.getAssets().open(FILE_NAME);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
 
 }
